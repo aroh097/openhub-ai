@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Hub AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-950 text-white flex">
+
+<!-- Sidebar -->
+<div class="w-64 bg-gray-900 h-screen p-4 hidden md:block">
+  <h1 class="text-xl font-bold mb-6">🚀 Open Hub AI</h1>
+  <button onclick="newChat()" class="w-full bg-blue-600 p-2 rounded mb-4">
+    + New Chat
+  </button>
+  <div id="history" class="text-sm text-gray-400"></div>
+</div>
+
+<!-- Main -->
+<div class="flex-1 flex flex-col h-screen">
+
+  <!-- Header -->
+  <div class="p-4 bg-gray-900 text-center font-bold">
+    Open Hub AI Chat
+  </div>
+
+  <!-- Chat -->
+  <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+
+  <!-- Input -->
+  <div class="p-4 bg-gray-900 flex gap-2">
+    <input id="input" class="flex-1 p-3 rounded bg-gray-800" placeholder="Ask anything...">
+    <button onclick="send()" class="bg-blue-600 px-6 rounded">Send</button>
+  </div>
+
+</div>
+
+<script>
+let history = [];
+
+async function send(){
+  let input = document.getElementById("input").value;
+  let box = document.getElementById("chatBox");
+
+  if(!input) return;
+
+  box.innerHTML += `
+    <div class="text-right">
+      <span class="bg-blue-600 px-3 py-2 rounded inline-block">${input}</span>
+    </div>
+  `;
+
+  document.getElementById("input").value = "";
+
+  let res = await fetch("/chat", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({message: input})
+  });
+
+  let data = await res.json();
+
+  box.innerHTML += `
+    <div class="text-left">
+      <span class="bg-gray-800 px-3 py-2 rounded inline-block">${data.reply}</span>
+    </div>
+  `;
+
+  box.scrollTop = box.scrollHeight;
+
+  history.push(input);
+  document.getElementById("history").innerHTML =
+    history.map(h => `<div>• ${h}</div>`).join("");
+}
+
+function newChat(){
+  document.getElementById("chatBox").innerHTML = "";
+}
+</script>
+
+</body>
+  </html>
