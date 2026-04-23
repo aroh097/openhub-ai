@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Hub AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <nav class="flex justify-between items-center p-4 bg-gray-800">
+    <h1 class="text-xl font-bold">Open Hub AI</h1>
+  </nav>
+
+  <div class="flex flex-col items-center mt-10">
+    <div class="w-full max-w-xl">
+      <textarea id="userInput" class="w-full p-3 rounded bg-gray-800" rows="3" placeholder="Ask anything..."></textarea>
+      <button onclick="sendMessage()" class="mt-3 w-full bg-blue-600 p-3 rounded">Send</button>
+      <div id="response" class="mt-6 bg-gray-800 p-4 rounded"></div>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      let input = document.getElementById("userInput").value;
+
+      let response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: input })
+      });
+
+      let data = await response.json();
+      document.getElementById("response").innerText = data.reply;
+    }
+  </script>
+
+</body>
+</html>
