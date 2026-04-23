@@ -8,23 +8,30 @@
 </head>
 <body class="bg-gray-900 text-white">
 
-  <nav class="flex justify-between items-center p-4 bg-gray-800">
-    <h1 class="text-xl font-bold">Open Hub AI</h1>
+  <nav class="p-4 bg-gray-800 text-center text-xl font-bold">
+    🚀 Open Hub AI
   </nav>
 
-  <div class="flex flex-col items-center mt-10">
+  <div class="flex flex-col items-center mt-10 px-4">
     <div class="w-full max-w-xl">
-      <textarea id="userInput" class="w-full p-3 rounded bg-gray-800" rows="3" placeholder="Ask anything..."></textarea>
+      
+      <div id="chatBox" class="bg-gray-800 p-4 rounded h-80 overflow-y-auto mb-4"></div>
+
+      <textarea id="userInput" class="w-full p-3 rounded bg-gray-700" rows="2" placeholder="Ask anything..."></textarea>
+      
       <button onclick="sendMessage()" class="mt-3 w-full bg-blue-600 p-3 rounded">Send</button>
-      <div id="response" class="mt-6 bg-gray-800 p-4 rounded"></div>
+
     </div>
   </div>
 
   <script>
     async function sendMessage() {
       let input = document.getElementById("userInput").value;
+      let chatBox = document.getElementById("chatBox");
 
-      let response = await fetch("http://localhost:5000/chat", {
+      chatBox.innerHTML += `<p><b>You:</b> ${input}</p>`;
+
+      let res = await fetch("https://openhub-ai.onrender.com/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -32,8 +39,12 @@
         body: JSON.stringify({ message: input })
       });
 
-      let data = await response.json();
-      document.getElementById("response").innerText = data.reply;
+      let data = await res.json();
+
+      chatBox.innerHTML += `<p class='text-green-400'><b>AI:</b> ${data.reply}</p>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      document.getElementById("userInput").value = "";
     }
   </script>
 
